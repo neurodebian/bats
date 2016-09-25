@@ -1,3 +1,11 @@
+bats (0.4.0-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Set TERM=dumb for tests to avoid FTBFS (Closes: #798296) and
+    Using dumb to keep the build reproducible.
+
+ -- Tobias Frost <tobi@debian.org>  Sun, 25 Sep 2016 11:40:12 +0200
+
 bats (0.4.0-1) unstable; urgency=low
 
   * Initial release (Closes: #709135)

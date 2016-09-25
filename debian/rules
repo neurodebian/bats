@@ -11,5 +11,5 @@ override_dh_auto_install:
 	./install.sh debian/bats/usr
 
 override_dh_auto_test:
-	bin/bats --tap test
+	TERM=dumb bin/bats --tap test
 
