@@ -1,4 +1,4 @@
 version=3
 opts=filenamemangle=s/.+\/v?(.*)\.tar\.gz/bats-$1.tar.gz/ \
-https://github.com/sstephenson/bats/tags .*/v?(\d[\d\.]+)\.tar\.gz
+https://github.com/bats-core/bats-core/tags .*/v?(\d[\d\.]+)\.tar\.gz
 

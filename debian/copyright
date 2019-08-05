@@ -1,9 +1,10 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: bats
-Source: https://github.com/sstephenson/bats
+Source: https://github.com/bats-core/bats-core
 
 Files: *
 Copyright: 2014 Sam Stephenson
+           2017 bats-core contributors
 License: MIT
 
 Files: debian/*

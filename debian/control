@@ -3,8 +3,8 @@ Section: shells
 Priority: optional
 Maintainer: Yaroslav Halchenko <debian@onerussian.com>
 Build-Depends: debhelper (>= 9)
-Standards-Version: 3.9.6
-Homepage: https://github.com/sstephenson/bats
+Standards-Version: 4.3.0
+Homepage: https://github.com/bats-core/bats-core
 Vcs-Git: https://github.com/neurodebian/bats -b debian
 Vcs-Browser: https://github.com/neurodebian/bats
 
