@@ -2,6 +2,10 @@ bats (1.1.0+git104-g1c83a1b-1) unstable; urgency=medium
 
   * New upstream snapshot from v1.1.0-104-g1c83a1b 
     - adds --filter argument
+  * Needs GNU's (not moreutils) parallel command line tool.
+    Added to B-Depends (for tests) and Recommends.
+    ATM no proper sensing is done, so parallel runs might fail if there is
+    no GNU parallel. See https://github.com/bats-core/bats-core/issues/240
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Tue, 06 Aug 2019 11:52:32 -0400
 
