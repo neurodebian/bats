@@ -1,3 +1,10 @@
+bats (1.1.0+git104-g1c83a1b-1) unstable; urgency=medium
+
+  * New upstream snapshot from v1.1.0-104-g1c83a1b 
+    - adds --filter argument
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Tue, 06 Aug 2019 11:52:32 -0400
+
 bats (1.1.0-1) unstable; urgency=medium
 
   * Fresh upstream release
