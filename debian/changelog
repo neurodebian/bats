@@ -5,8 +5,9 @@ bats (1.1.0-1) unstable; urgency=medium
       https://github.com/bats-core/bats-core
     - adjusted debian/control Homepage (Closes: #925095)
       (thanks Kevin Otte for the initial report)
+  * Refreshed deb_libexec_to_lib patch
 
- -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 05 Aug 2019 15:59:38 -0400
+ -- Yaroslav Halchenko <debian@onerussian.com>  Tue, 06 Aug 2019 11:47:09 -0400
 
 bats (0.4.0-2) UNRELEASED; urgency=medium
 
