@@ -1,3 +1,9 @@
+bats (1.2.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 17 Dec 2020 11:44:23 -0500
+
 bats (1.1.0+git104-g1c83a1b-1) unstable; urgency=medium
 
   * New upstream snapshot from v1.1.0-104-g1c83a1b 
