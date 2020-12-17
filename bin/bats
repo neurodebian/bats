@@ -1,44 +1,59 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-BATS_READLINK='true'
-if command -v 'greadlink' >/dev/null; then
-  BATS_READLINK='greadlink'
-elif command -v 'readlink' >/dev/null; then
-  BATS_READLINK='readlink'
+if command -v greadlink >/dev/null; then
+  bats_readlinkf() {
+    greadlink -f "$1"
+  }
+else
+  bats_readlinkf() {
+    readlink -f "$1"
+  }
 fi
 
-bats_resolve_absolute_root_dir() {
-  local cwd="$PWD"
-  local path="$1"
-  local result="$2"
-  local target_dir
-  local target_name
-  local original_shell_options="$-"
+fallback_to_readlinkf_posix() {
+  bats_readlinkf() {
+    [ "${1:-}" ] || return 1
+    max_symlinks=40
+    CDPATH='' # to avoid changing to an unexpected directory
 
-  # Resolve the parent directory, e.g. /bin => /usr/bin on CentOS (#113).
-  set -P
+    target=$1
+    [ -e "${target%/}" ] || target=${1%"${1##*[!/]}"} # trim trailing slashes
+    [ -d "${target:-/}" ] && target="$target/"
 
-  while true; do
-    target_dir="${path%/*}"
-    target_name="${path##*/}"
+    cd -P . 2>/dev/null || return 1
+    while [ "$max_symlinks" -ge 0 ] && max_symlinks=$((max_symlinks - 1)); do
+      if [ ! "$target" = "${target%/*}" ]; then
+        case $target in
+          /*) cd -P "${target%/*}/" 2>/dev/null || break ;;
+          *) cd -P "./${target%/*}" 2>/dev/null || break ;;
+        esac
+        target=${target##*/}
+      fi
 
-    if [[ "$target_dir" != "$path" ]]; then
-      cd "$target_dir"
-    fi
+      if [ ! -L "$target" ]; then
+        target="${PWD%/}${target:+/}${target}"
+        printf '%s\n' "${target:-/}"
+        return 0
+      fi
 
-    if [[ -L "$target_name" ]]; then
-      path="$("$BATS_READLINK" "$target_name")"
-    else
-      printf -v "$result" -- '%s' "${PWD%/*}"
-      set +P "-$original_shell_options"
-      cd "$cwd"
-      return
-    fi
-  done
+      # `ls -dl` format: "%s %u %s %s %u %s %s -> %s\n",
+      #   <file mode>, <number of links>, <owner name>, <group name>,
+      #   <size>, <date and time>, <pathname of link>, <contents of link>
+      # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ls.html
+      link=$(ls -dl -- "$target" 2>/dev/null) || break
+      target=${link#*" $target -> "}
+    done
+    return 1
+  }
 }
 
-export BATS_ROOT
-bats_resolve_absolute_root_dir "$0" 'BATS_ROOT'
-exec "$BATS_ROOT/libexec/bats-core/bats" "$@"
+if ! BATS_PATH=$(bats_readlinkf "${BASH_SOURCE[0]}" 2>/dev/null); then
+  fallback_to_readlinkf_posix
+  BATS_PATH=$(bats_readlinkf "${BASH_SOURCE[0]}")
+fi
+
+export BATS_ROOT=${BATS_PATH%/*/*}
+export -f bats_readlinkf
+exec env BATS_ROOT="$BATS_ROOT" "$BATS_ROOT/libexec/bats-core/bats" "$@"
