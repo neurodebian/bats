@@ -1,6 +1,8 @@
 bats (1.2.1-1) unstable; urgency=medium
 
   * New upstream release
+  * d/rules
+    - testing adjusted to provide fake $HOME needed for parallel support
 
  -- Yaroslav Halchenko <debian@onerussian.com>  Thu, 17 Dec 2020 11:44:23 -0500
 

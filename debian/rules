@@ -11,5 +11,7 @@ override_dh_auto_install:
 	./install.sh debian/bats/usr
 
 override_dh_auto_test:
+	export HOME=$$(mktemp -d)
+	mkdir -p ~/.parallel && touch ~/.parallel/will-cite
 	TERM=dumb bin/bats --tap test
 
