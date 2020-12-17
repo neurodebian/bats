@@ -3,6 +3,8 @@
 # output every command that modifies files on the build system.
 #DH_VERBOSE = 1
 
+export HOME=$(shell mktemp -d)
+
 # main packaging script based on dh7 syntax
 %:
 	dh $@
@@ -11,7 +13,6 @@ override_dh_auto_install:
 	./install.sh debian/bats/usr
 
 override_dh_auto_test:
-	export HOME=$$(mktemp -d)
 	mkdir -p ~/.parallel && touch ~/.parallel/will-cite
 	TERM=dumb bin/bats --tap test
 
