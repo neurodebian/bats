@@ -1,47 +1,41 @@
-diff --git a/libexec/bats-core/bats b/libexec/bats-core/bats
-index c7b448d297..0b549839c9 100755
 --- a/libexec/bats-core/bats
 +++ b/libexec/bats-core/bats
-@@ -69,6 +69,7 @@ expand_path() {
+@@ -64,6 +64,7 @@ expand_path() {
  }
  
  BATS_LIBEXEC="$(dirname "$(bats_readlinkf "${BASH_SOURCE[0]}")")"
 +export BATS_LIBEXEC
  export BATS_CWD="$PWD"
  export BATS_TEST_PATTERN="^[[:blank:]]*@test[[:blank:]]+(.*[^[:blank:]])[[:blank:]]+\{(.*)\$"
- export BATS_TEST_PATTERN_COMMENT="[[:blank:]]*([^[:blank:]()]+)[[:blank:]]*\(?\)?[[:blank:]]+\{[[:blank:]]+#[[:blank:]]*@test[[:blank:]]*\$"
-diff --git a/libexec/bats-core/bats-exec-file b/libexec/bats-core/bats-exec-file
-index 8ad79a03be..372c6460da 100755
+ export BATS_TEST_FILTER=
 --- a/libexec/bats-core/bats-exec-file
 +++ b/libexec/bats-core/bats-exec-file
-@@ -193,7 +193,7 @@ bats_run_tests_in_parallel() {
-       ((++test_number_in_file))
-       mkdir -p "$output_folder/$test_number_in_suite"
-       bats_semaphore_run "$output_folder/$test_number_in_suite" \
--                          bats-exec-test "${flags[@]}" "$filename" "$test_name" "$test_number_in_suite" "$test_number_in_file" \
-+                          "$BATS_LIBEXEC/bats-exec-test" "${flags[@]}" "$filename" "$test_name" "$test_number_in_suite" "$test_number_in_file" \
-                           > "$output_folder/$test_number_in_suite/pid"
-     fi
-     # print results early to get interactive feedback
-@@ -239,9 +239,9 @@ bats_run_tests() {
-         ((++test_number_in_file))
-         # deal with empty flags to avoid spurious "unbound variable" errors on Bash 4.3 and lower
+@@ -167,7 +167,7 @@ bats_run_tests() {
+         # use --results to gather output in separate files
+         # use --fg mode to retrieve exit codes (all non zero exit codes seem to mapped to 1), but which requires us to suppress its output
+         # shellcheck disable=SC2154 #bats_parallel_args is inherited from exec-suite
+-        parallel --semaphore -j "$num_jobs" "${bats_parallel_args[@]}" --fg -- bats-exec-test "${flags[@]}" "$filename" "$test_name" "$test_number" >"$test_output_dir/stdout" 2>"$test_output_dir/stderr" &
++        parallel --semaphore -j "$num_jobs" "${bats_parallel_args[@]}" --fg -- $BATS_LIBEXEC/bats-exec-test "${flags[@]}" "$filename" "$test_name" "$test_number" >"$test_output_dir/stdout" 2>"$test_output_dir/stderr" &
+         pid=$!
+         test_pids_and_numbers+=("$pid,$test_number")
+       fi
+@@ -189,9 +189,9 @@ bats_run_tests() {
+       if [[ $test_name ]]; then
+         ((++test_number))
          if [[ "${#flags[@]}" -gt 0 ]]; then
--          bats-exec-test "${flags[@]}" "$filename" "$test_name" "$test_number_in_suite" "$test_number_in_file" || status=1
-+          "$BATS_LIBEXEC/bats-exec-test" "${flags[@]}" "$filename" "$test_name" "$test_number_in_suite" "$test_number_in_file" || status=1
+-          bats-exec-test "${flags[@]}" "$filename" "$test_name" "$test_number" || status=1
++          $BATS_LIBEXEC/bats-exec-test "${flags[@]}" "$filename" "$test_name" "$test_number" || status=1
          else
--          bats-exec-test "$filename" "$test_name" "$test_number_in_suite" "$test_number_in_file" || status=1
-+          "$BATS_LIBEXEC/bats-exec-test" "$filename" "$test_name" "$test_number_in_suite" "$test_number_in_file" || status=1
+-          bats-exec-test "$filename" "$test_name" "$test_number" || status=1
++          $BATS_LIBEXEC/bats-exec-test "$filename" "$test_name" "$test_number" || status=1
          fi
        fi
      done
-diff --git a/test/bats.bats b/test/bats.bats
-index 5ea8f72279..95cf591f25 100755
 --- a/test/bats.bats
 +++ b/test/bats.bats
-@@ -701,3 +701,9 @@ END_OF_ERR_MSG
-   [ "${lines[5]}" = 'ok 5 should_be_found_with_function_and_parens' ]
-   [ "${lines[6]}" = 'ok 6 should_be_found_with_function_parens_and_whitespace' ]
+@@ -576,3 +576,9 @@ END_OF_ERR_MSG
+   run bash -c "echo $'1..1\nok 1' | bats_test_count_validator"
+   [[ $status -eq 0 ]]
  }
 +
 +@test "test works even if PATH is reset" {
@@ -49,9 +43,6 @@ index 5ea8f72279..95cf591f25 100755
 +  [ "$status" -eq 1 ]
 +  [ "${lines[4]}" = "# /usr/local/bin:/usr/bin:/bin" ]
 +}
-diff --git a/test/fixtures/bats/update_path_env.bats b/test/fixtures/bats/update_path_env.bats
-new file mode 100644
-index 0000000000..4a8959c871
 --- /dev/null
 +++ b/test/fixtures/bats/update_path_env.bats
 @@ -0,0 +1,6 @@
