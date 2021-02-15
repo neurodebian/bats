@@ -1,3 +1,11 @@
+bats (1.2.1-2) unstable; urgency=medium
+
+  * debian/patches
+    - adopted patch from https://github.com/bats-core/bats-core/pull/387 to
+      resolve "bats-exec-test: command not found" (Closes: #980967)
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Sun, 14 Feb 2021 20:08:29 -0500
+
 bats (1.2.1-1) unstable; urgency=medium
 
   * New upstream release
