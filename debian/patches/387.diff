@@ -33,7 +33,7 @@
      done
 --- a/test/bats.bats
 +++ b/test/bats.bats
-@@ -576,3 +576,9 @@ END_OF_ERR_MSG
+@@ -576,3 +576,10 @@ END_OF_ERR_MSG
    run bash -c "echo $'1..1\nok 1' | bats_test_count_validator"
    [[ $status -eq 0 ]]
  }
@@ -41,7 +41,8 @@
 +@test "test works even if PATH is reset" {
 +  run bats "$FIXTURE_ROOT/update_path_env.bats"
 +  [ "$status" -eq 1 ]
-+  [ "${lines[4]}" = "# /usr/local/bin:/usr/bin:/bin" ]
++  # yoh: disabling due to assumptions of the test on what PATH should look like
++  #[ "${lines[4]}" = "# /usr/local/bin:/usr/bin:/bin" ]
 +}
 --- /dev/null
 +++ b/test/fixtures/bats/update_path_env.bats
