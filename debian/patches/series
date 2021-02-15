@@ -1,2 +1,3 @@
 # if lintian does not whine, let's stick to upstream using /usr/libexec not /usr/lib
 # deb_libexec_to_lib
+387.diff
